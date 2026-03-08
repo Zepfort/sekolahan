@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -15,10 +16,16 @@ class UserController extends Controller
      */
     public function index() // Menampilkan semua Data
     {
-        $data = User::all();
+        $users = User::with(['guru'])->get();
+
+        $resource = UserResource::collection($users);
 
         // default response
-        return $data;
+        return $this->success(
+            $resource,
+            200,
+            'Berhasil mengambil semua data User'
+        );
 
         // custom response
         // return $this->success($data, 200, 'Data User Berhasil di ambil');
@@ -49,8 +56,14 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $resource = new UserResource($user);
+
         if ($user) {
-            return $this->success($user, 201, 'User berhasil ditambahlan!');
+            return $this->success(
+                $resource,
+                201,
+                'User berhasil ditambahkan!'
+            );
         }
 
         return $this->failedResponse('User gagal ditambahkan!', 500);
@@ -61,7 +74,13 @@ class UserController extends Controller
      */
     public function show(User $user) // Menampilkan data berdasarkan id (GET)
     {
-        return $this->success($user, 200);
+       $resource = new UserResource($user);
+
+        return $this->success(
+            $resource,
+            200,
+            'Data detail user berhasil diambil!'
+        );
     }
 
     /**
@@ -72,7 +91,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'type'      => 'required|in:admin,guru',
             'username'  => 'required|string|unique:users,username,' . $user->id,
-            'email'     => 'required|email|unique:users,username,' . $user->id,
+            'email'     => 'required|email|unique:users,email,' . $user->id,
             'name'      => 'required|string',
             'password'  => 'nullable|min:6',
         ]);
@@ -92,8 +111,14 @@ class UserController extends Controller
 
         $saved = $user->save();
 
+        $resource = new UserResource($user);
+
         if($saved) {
-            return $this->success($user, 200, 'User berhasil diupdate!');
+            return $this->success(
+                $resource,
+                200,
+                'User berhasil diupdate!'
+            );
         }
 
         return $this->failedResponse('User gagal diupdate!', 500);

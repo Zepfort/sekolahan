@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MapelResource;
 use App\Models\Mapel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,9 +15,15 @@ class MapelController extends Controller
      */
     public function index()
     {
-        $data = Mapel::all();
+        $kelas = Mapel::all();
 
-        return $data;
+        $resource = MapelResource::collection($kelas);
+
+        return $this->success(
+            $resource,
+            200,
+            'Daftar semua mapel berhasil diambil!'
+        );
     }
 
     /**
@@ -38,8 +45,14 @@ class MapelController extends Controller
             'nama_mapel' => $request->nama_mapel
         ]);
 
+        $resource = new MapelResource($mapel);
+
         if ($mapel) {
-            return $this->success($mapel, 201, 'Mapel sudah ditambahkan!');
+            return $this->success(
+                $resource,
+                201,
+                'Mapel sudah ditambahkan!'
+            );
         }
 
         return $this->failedResponse('Gagal menambahkan mapel!', 500);
@@ -50,7 +63,13 @@ class MapelController extends Controller
      */
     public function show(Mapel $mapel)
     {
-        return $this->success($mapel, 200);
+        $resource = new MapelResource($mapel);
+
+        return $this->success(
+            $resource,
+            200,
+            'Data Mapel detail berhasil diambil!'
+        );
     }
 
     /**
@@ -72,8 +91,14 @@ class MapelController extends Controller
 
         $saved = $mapel->save();
 
+        $resource = new MapelResource($mapel);
+
         if ($saved) {
-            return $this->success($mapel, 201, 'Mapel berhasil di-update!');
+            return $this->success(
+                $resource,
+                200,
+                'Mapel berhasil di-update!'
+            );
         }
 
         return $this->failedResponse('Gagal mengupdate mapel!', 500);
@@ -88,7 +113,7 @@ class MapelController extends Controller
         $deleteData = $mapel->delete();
 
         if ($deleteData) {
-            return $this->success($deleteData, 200, 'Berhasil hapus kelas!');
+            return $this->success($deleteData, 200, 'Berhasil hapus mapel!');
         }
 
         return $this->failedResponse('Gagal menghapus mapel!', 500);

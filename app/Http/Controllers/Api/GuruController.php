@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\GuruResource;
 use App\Models\Guru;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,9 +18,14 @@ class GuruController extends Controller
      */
     public function index()
     {
-        $data = Guru::all();
+        $guru = Guru::with(['user'])->get();
 
-        return $data;
+        $resource = GuruResource::collection($guru);
+
+        return $this->success(
+            $resource,
+            200,
+            'Daftar guru berhasil diambil!');
     }
 
     /**
@@ -70,8 +76,14 @@ class GuruController extends Controller
             'pendidikan'    => $request->pendidikan
         ]);
 
+
+        $resource = new GuruResource($guru);
+
         if ($guru) {
-            return $this->success($guru, 201, 'Guru berhasil ditambahkan!');
+            return $this->success(
+                $resource,
+                201,
+                'Profile Guru berhasil dibuat!');
         }
 
         return $this->failedResponse('Guru gagal ditasmbahkan!', 500);
@@ -81,7 +93,13 @@ class GuruController extends Controller
      */
     public function show(Guru $guru)
     {
-        return $this->success($guru, 200);
+        $resource = new GuruResource($guru);
+
+        return $this->success(
+            $resource,
+            200,
+            "Data Guru secara detail berhasil ditampilkan!"
+        );
     }
 
     /**
@@ -123,8 +141,13 @@ class GuruController extends Controller
 
         $saved = $guru->push();
 
+        $resource = new GuruResource($guru);
+
         if ($saved) {
-            return $this->success($guru, 200, 'Guru berhasil diupdate!');
+            return $this->success(
+                $resource,
+                200,
+                'Data guru berhasil diupdate!');
         }
 
         return $this->failedResponse('Guru gagal diupdate!', 500);

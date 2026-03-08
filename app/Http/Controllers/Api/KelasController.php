@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\GuruResource;
+use App\Http\Resources\KelasResource;
 use App\Models\Kelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,9 +16,15 @@ class KelasController extends Controller
      */
     public function index()
     {
-        $data = Kelas::all();
+        $kelas = Kelas::all();
 
-        return $data;
+        $resource = KelasResource::collection($kelas);
+
+        return $this->success(
+            $resource,
+            200,
+            'Daftar semua kelas berhasil diambil!'
+        );
     }
 
     /**
@@ -38,8 +46,14 @@ class KelasController extends Controller
             'nama_kelas'    => $request->nama_kelas
         ]);
 
+        $resource = new KelasResource($kelas);
+
         if ($kelas) {
-            return $this->success($kelas, 201, 'Kelas berhasil ditambahkan');
+            return $this->success(
+                $resource,
+                201,
+                'Kelas berhasil ditambahkan'
+            );
         }
 
         return $this->failedResponse('Kelas gagal ditambahkan', 500);
@@ -50,7 +64,13 @@ class KelasController extends Controller
      */
     public function show(Kelas $kelas)
     {
-        return $this->success($kelas, 200);
+        $resource = new KelasResource($kelas);
+
+        return $this->success(
+            $resource,
+            200,
+            'Data Detail kelas berhasil diambil!'
+        );
     }
 
     /**
@@ -72,8 +92,14 @@ class KelasController extends Controller
 
         $saved = $kelas->save();
 
+        $resource = new KelasResource($kelas);
+
         if ($saved) {
-            return $this->success($kelas, 200, 'Kelas berhasil diupdate!');
+            return $this->success(
+                $resource,
+                200,
+                'Kelas berhasil di-update!'
+            );
         };
 
         return $this->failedResponse('Kelas gagal diupdate!', 500);

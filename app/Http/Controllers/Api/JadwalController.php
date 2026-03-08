@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\JadwalResource;
 use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,9 +15,14 @@ class JadwalController extends Controller
      */
     public function index()
     {
-        $data = Jadwal::with(['kelas', 'mapel', 'guru'])->get();
+        $jadwal = Jadwal::with(['kelas', 'mapel', 'guru'])->get();
 
-        return $data;
+        $resource = JadwalResource::collection($jadwal);
+
+        return $this->success(
+            $resource,
+            200,
+            'Daftar jadwal berhasil diambil!');
     }
 
     /**
@@ -64,9 +70,14 @@ class JadwalController extends Controller
             'jam_pelajaran' => $request->jam_pelajaran,
         ]);
 
+        $resource = new JadwalResource($jadwal);
+
         if ($jadwal) {
-            return $this->success($jadwal, 201, 'Jadwal berhasil dibuat!');
-       }
+            return $this->success(
+                $resource,
+                201,
+                'Jadwal berhasil dibuat!');
+        }
 
         return $this->failedResponse('Gagal membuat jadwal', 500);
     }
@@ -77,7 +88,15 @@ class JadwalController extends Controller
      */
     public function show(Jadwal $jadwal)
     {
-        return $this->success($jadwal, 200);
+        $jadwal->load(['guru','mapel', 'kelas']);
+
+        $resource = new JadwalResource($jadwal);;
+
+        return $this->success(
+            $resource,
+            200,
+            'Detail jadwal ditemukan'
+        );
     }
 
     /**
@@ -125,8 +144,13 @@ class JadwalController extends Controller
 
         $saved = $jadwal->save();
 
+        $resource = new JadwalResource($jadwal);
+
         if ($saved) {
-            return $this->success($jadwal, 200, 'Jadwal berhasil diupdate!');
+            return $this->success(
+                $resource,
+                200,
+                'Jadwal berhasil diupdate!');
         };
 
         return $this->failedResponse('Jadwal gagal diupdate!', 500);
@@ -140,9 +164,9 @@ class JadwalController extends Controller
         $deleteData = $jadwal->delete();
 
         if ($deleteData) {
-            return $this->success(null, 200, 'Kelas berhasil dihapus!');
+            return $this->success(null, 200, 'Jadwal berhasil dihapus!');
         }
 
-        return $this->failedResponse('Kelas gagal dihapus!', 500);
+        return $this->failedResponse('Jadwal gagal dihapus!', 500);
     }
 }
