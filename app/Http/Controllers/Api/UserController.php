@@ -14,15 +14,21 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() // Menampilkan semua Data
+    public function index(Request $request) // Menampilkan semua Data
     {
-        $users = User::with(['guru'])->get();
+        $model = new User();
+        $resourceInstance = new UserResource($model);
 
-        $resource = UserResource::collection($users);
+        $data = $resourceInstance->getQueryData($request);
+
+        $resourceData = UserResource::collection($data)
+            ->additional($resourceInstance->with($request))
+            ->response()
+            ->getData(true);
 
         // default response
         return $this->success(
-            $resource,
+            $resourceData,
             200,
             'Berhasil mengambil semua data User'
         );
@@ -74,12 +80,16 @@ class UserController extends Controller
      */
     public function show(User $user) // Menampilkan data berdasarkan id (GET)
     {
-       $resource = new UserResource($user);
+        $resourceInstance = new UserResource($user);
+
+        $resourceData = $resourceInstance
+                            ->response()
+                            ->getData(true);
 
         return $this->success(
-            $resource,
+            $resourceData,
             200,
-            'Data detail user berhasil diambil!'
+            "Detail data user berhasil ditemukan!"
         );
     }
 

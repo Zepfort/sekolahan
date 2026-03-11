@@ -16,18 +16,25 @@ class GuruController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $guru = Guru::with(['user'])->get();
+        $model = new Guru();
+        $resourceInstance = new GuruResource($model);
 
-        $resource = GuruResource::collection($guru);
+        $data = $resourceInstance->getQueryData($request);
 
+         $resourceData = GuruResource::collection($data)
+            ->additional($resourceInstance->with($request))
+            ->response()
+            ->getData(true);
+
+        // response
         return $this->success(
-            $resource,
+            $resourceData,
             200,
-            'Daftar guru berhasil diambil!');
+            'Data semua guru berhasil diambli!'
+        );
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -93,12 +100,16 @@ class GuruController extends Controller
      */
     public function show(Guru $guru)
     {
-        $resource = new GuruResource($guru);
+        $resourceInstance = new GuruResource($guru);
+
+        $resourceData = $resourceInstance
+                            ->response()
+                            ->getData(true);
 
         return $this->success(
-            $resource,
+            $resourceData,
             200,
-            "Data Guru secara detail berhasil ditampilkan!"
+            "Detail data guru berhasil ditemukan!"
         );
     }
 

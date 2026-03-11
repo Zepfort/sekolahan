@@ -13,14 +13,20 @@ class MapelController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kelas = Mapel::all();
+        $model = new Mapel();
+        $resourceInstance = new MapelResource($model);
 
-        $resource = MapelResource::collection($kelas);
+        $data = $resourceInstance->getQueryData($request);
+
+        $resourceData = MapelResource::collection($data)
+            ->additional($resourceInstance->with($request))
+            ->response()
+            ->getData(true);
 
         return $this->success(
-            $resource,
+            $resourceData,
             200,
             'Daftar semua mapel berhasil diambil!'
         );
@@ -63,12 +69,16 @@ class MapelController extends Controller
      */
     public function show(Mapel $mapel)
     {
-        $resource = new MapelResource($mapel);
+        $resourceInstance = new MapelResource($mapel);
+
+        $resourceData = $resourceInstance
+                            ->response()
+                            ->getData(true);
 
         return $this->success(
-            $resource,
+            $resourceData,
             200,
-            'Data Mapel detail berhasil diambil!'
+            "Detail data mapel berhasil ditemukan!"
         );
     }
 

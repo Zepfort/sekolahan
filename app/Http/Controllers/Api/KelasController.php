@@ -14,14 +14,20 @@ class KelasController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $kelas = Kelas::all();
+        $model = new Kelas();
+        $resourceInstance = new KelasResource($model);
 
-        $resource = KelasResource::collection($kelas);
+        $data = $resourceInstance->getQueryData($request);
+
+        $resourceData = KelasResource::collection($data)
+            ->additional($resourceInstance->with($request))
+            ->response()
+            ->getData(true);
 
         return $this->success(
-            $resource,
+            $resourceData,
             200,
             'Daftar semua kelas berhasil diambil!'
         );
@@ -64,12 +70,16 @@ class KelasController extends Controller
      */
     public function show(Kelas $kelas)
     {
-        $resource = new KelasResource($kelas);
+        $resourceInstance = new KelasResource($kelas);
+
+        $resourceData = $resourceInstance
+                        ->response()
+                        ->getData(true);
 
         return $this->success(
-            $resource,
+            $resourceData,
             200,
-            'Data Detail kelas berhasil diambil!'
+            "Detail data kelas berhasil ditemukan!"
         );
     }
 

@@ -13,14 +13,20 @@ class JadwalController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $jadwal = Jadwal::with(['kelas', 'mapel', 'guru'])->get();
+        $model = new Jadwal;
+        $resourceInstance = new JadwalResource($model);
 
-        $resource = JadwalResource::collection($jadwal);
+        $data = $resourceInstance->getQueryData($request);
+
+        $resourceData = JadwalResource::collection($data)
+            ->additional($resourceInstance->with($request))
+            ->response()
+            ->getData(true);
 
         return $this->success(
-            $resource,
+            $resourceData,
             200,
             'Daftar jadwal berhasil diambil!');
     }
@@ -88,12 +94,14 @@ class JadwalController extends Controller
      */
     public function show(Jadwal $jadwal)
     {
-        $jadwal->load(['guru','mapel', 'kelas']);
+        $resourceInstance = new JadwalResource($jadwal);
 
-        $resource = new JadwalResource($jadwal);;
+        $resourceData = $resourceInstance
+                            ->response()
+                            ->getData(true);
 
         return $this->success(
-            $resource,
+            $resourceData,
             200,
             'Detail jadwal ditemukan'
         );

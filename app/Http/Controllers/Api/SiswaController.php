@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Siswa;
 use App\Http\Resources\SiswaResource;
+use App\Http\Resources\BaseResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -14,21 +15,24 @@ class SiswaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() // Menampilkan semua Data
+    public function index(Request $request) // Menampilkan semua Data
     {
-        $siswa = Siswa::all();
+        $model = new Siswa();
+        $resourceInstance = new SiswaResource($model);
 
-        $resource = SiswaResource::collection($siswa);
+        $data = $resourceInstance->getQueryData($request);
 
-        // default response
+        $resourceData = SiswaResource::collection($data)
+            ->additional($resourceInstance->with($request))
+            ->response()
+            ->getData(true);
+
+        // response
         return $this->success(
-            $resource,
+            $resourceData,
             200,
             'Data semua siswa berhasil diambli!'
         );
-
-        // custom response
-        // return $this->success($data, 200, 'Data User Berhasil di ambil');
     }
 
     /**
@@ -83,12 +87,16 @@ class SiswaController extends Controller
      */
     public function show(Siswa $siswa) // Menampilkan data berdasarkan id (GET)
     {
-        $resource = new SiswaResource($siswa);
+        $resourceInstance = new SiswaResource($siswa);
+
+        $resourceData = $resourceInstance
+                            ->response()
+                            ->getData(true);
 
         return $this->success(
-            $resource,
+            $resourceData,
             200,
-            'Data detail siswa berhasil diambil!'
+            "Detail data guru siswa berhasil ditemukan!"
         );
     }
 
@@ -137,7 +145,7 @@ class SiswaController extends Controller
             );
         }
 
-        return $this->failedResponse('Siswa gagal diupdate!', 500);
+        return $this->failedResponse('Siswa gagal di-update!', 500);
 
     }
 
