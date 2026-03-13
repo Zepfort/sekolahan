@@ -27,17 +27,11 @@ class DatabaseSeeder extends Seeder
 
         $daftar_kelas = [
             ['kode_kelas' => 'X-IPA-A', 'nama_kelas' => 'Sepuluh IPA A'],
-            ['kode_kelas' => 'X-IPA-B', 'nama_kelas' => 'Sepuluh IPA B'],
-            ['kode_kelas' => 'X-IPA-C', 'nama_kelas' => 'Sepuluh IPA C'],
-            ['kode_kelas' => 'X-IPA-D', 'nama_kelas' => 'Sepuluh IPA D'],
+            // ['kode_kelas' => 'X-IPA-B', 'nama_kelas' => 'Sepuluh IPA B'],
             ['kode_kelas' => 'XI-IPA-A', 'nama_kelas' => 'Sebelas IPA A'],
-            ['kode_kelas' => 'XI-IPA-B', 'nama_kelas' => 'Sebelas IPA B'],
-            ['kode_kelas' => 'XI-IPA-C', 'nama_kelas' => 'Sebelas IPA C'],
-            ['kode_kelas' => 'XI-IPA-D', 'nama_kelas' => 'Sebelas IPA D'],
+            // ['kode_kelas' => 'XI-IPA-B', 'nama_kelas' => 'Sebelas IPA B'],
             ['kode_kelas' => 'XII-IPA-A' , 'nama_kelas'=> 'DuaBelas IPA A'],
-            ['kode_kelas' => 'XII-IPA-B' , 'nama_kelas'=> 'DuaBelas IPA B'],
-            ['kode_kelas' => 'XII-IPA-C' , 'nama_kelas'=> 'DuaBelas IPA C'],
-            ['kode_kelas' => 'XII-IPA-D' , 'nama_kelas'=> 'DuaBelas IPA D'],
+            // ['kode_kelas' => 'XII-IPA-B' , 'nama_kelas'=> 'DuaBelas IPA B'],
         ];
 
         foreach ($daftar_kelas as $k) Kelas::create($k);
@@ -53,7 +47,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($daftar_mapel as $m) Mapel::create($m);
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             $user = User::factory()->create(['type' => 'guru']);
             Guru::factory()->create([
                 'user_id' => $user->id,
@@ -65,7 +59,7 @@ class DatabaseSeeder extends Seeder
         $kelasIds = Kelas::pluck('id');
         foreach ($kelasIds as $id_kelas) {
             // 10 siswa per kelas
-            Siswa::factory()->count(10)->create([
+            Siswa::factory()->count(1)->create([
                 'kelas_id' => $id_kelas
             ]);
         }

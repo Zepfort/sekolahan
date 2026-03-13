@@ -96,7 +96,7 @@ class SiswaController extends Controller
         return $this->success(
             $resourceData,
             200,
-            "Detail data guru siswa berhasil ditemukan!"
+            "Detail data siswa berhasil ditemukan!"
         );
     }
 
