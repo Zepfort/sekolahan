@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;  // Menambahka ini
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Guru;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject // Menambahkan "implements JWTSubject"
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -53,5 +53,21 @@ class User extends Authenticatable
     public function guru()
     {
         return $this->hasOne(Guru::class, 'user_id', 'id');
+    }
+
+    /**
+     * Mengambil identifier unik yang akan disimpan di 'sub' (subject) claim JWT.
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Menambahkan payload custom ke dalam token.
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }
