@@ -9,7 +9,7 @@
 
 ## Tentang Repository ini
 
-Sekolahan API berisi manajemen informasi sekolah (Siswa, Guru, Mapel, Kelas, dan Jadwal) yang dibangun dengan Laravel 12.x . Mengimplementasikan arsitektur RESTful API Level 3 (Richardson Maturity Model) menggunakan format media Collection+JSON.
+Sekolahan API berisi manajemen informasi sekolah (Siswa, Guru, Mapel, Kelas, dan Jadwal) yang dibangun dengan Laravel 12.x . Mengimplementasikan arsitektur RESTful API Level 3 (Richardson Maturity Model) menggunakan format media Collection+JSON serta telah dilengkapi dengan sistem pengamanan data menggunakan JWT (JSON Web Token) Authentication untuk menjamin integritas dan kerahasiaan pertukaran data.
 
 ## Arsitektur Response
 API ini mengikuti struktur Collection+JSON yang terdiri dari:
@@ -714,62 +714,80 @@ composer install
 - Jalankan perintah:
 ```bash
 php artisan key:generate
+php artisan jwt:secret
 ```
 
 #### 4. Aktifkan Database MySQL/PostgreSQL dan Apache
+Aktifkan **Apache** dan **MySQL** pada panel Laragon/XAMPP/WAMP.
 
 #### 5. Migrate & Seed:
 ```bash
 php artisan migrate:fresh --seed
 ```
 
-#### 6. Menjalankan Aplikasi
+#### 6. Autentikasi JWT
+Sebelum menjalankan operasi CRUD, maka harus melakukan login terlebih dahulu 
+Karena sistem ini menggunakan Stateless Authentication, setiap operasi CRUD (kecuali yang bersifat publik) memerlukan token:
+
+- Gunakan endpoint POST /api/login dengan kredensial dari seeder (misal: admin@sekolahan.test / password).
+
+- Ambil nilai token dari respon JSON.
+
+- Masukkan token tersebut pada Header Authorization dengan format: Bearer {your_token} di Postman atau klien API lainnya.
+
+#### 7. Menjalankan Aplikasi
 
 #### Opsi A: Menggunakan Laragon (Direkomendasikan)
-1. Aktifkan **Apache** dan **MySQL** pada panel Laragon.
-2. Akses aplikasi melalui URL virtual host: `http://sekolahan.test` (atau sesuai nama folder Anda).
+Apabila sudah login dan mengaktifkan **Apache** dan **MySQL/PostgreSQL** maka operasi CRUD bisa dijalankan dengan akses melalui URL: `http://sekolahan.test/` (atau sesuai nama folder Anda) dengan menyertakan prefix /api/ dan endpoint yang tersedia dalam daftar.
 
 #### Opsi B: Menggunakan Laravel Serve
 Jika tidak menggunakan Laragon, jalankan perintah berikut:
 ```bash
 php artisan serve
 ```
+Aplikasi akan berjalan di alamat: http://127.0.0.1:8000.
 
-## Daftar Endpoint Utama
+Catatan: Semua endpoint API harus diawali dengan prefix /api/. Contoh: http://127.0.0.1:8000/api/login.
+
+## Daftar Endpoint 
 
 | No | Method | Endpoint | Deskripsi |
 |----|--------|----------|-----------|
-| 1 | GET | `/api/users` | Mengambil daftar user |
-| 2 | POST | `/api/users` | Menambahkan user baru |
-| 3 | GET | `/api/users/{id}` | Mengambil data user berdasarkan id |
-| 4 | PUT/PATCH | `/api/users/{id}` | Mengedit data user berdasarkan id |
-| 5 | DELETE | `/api/users/{id}` | Menghapus data user berdasarkan id |
-| 6 | GET | `/api/siswa` | Mengambil daftar siswa |
-| 7 | POST | `/api/siswa` | Menambahkan siswa baru |
-| 8 | GET | `/api/siswa/{id}` | Mengambil data siswa berdasarkan id |
-| 9 | PUT/PATCH | `/api/siswa/{id}` | Mengedit data siswa berdasarkan id |
-| 10 | DELETE | `/api/siswa/{id}` | Menghapus data siswa berdasarkan id |
-| 11 | GET | `/api/guru` | Mengambil daftar guru |
-| 12 | POST | `/api/guru` | Menambahkan guru baru |
-| 13 | GET | `/api/guru/{id}` | Mengambil data guru berdasarkan id |
-| 14 | PUT/PATCH | `/api/guru/{id}` | Mengedit data guru berdasarkan id |
-| 15 | DELETE | `/api/guru/{id}` | Menghapus data guru berdasarkan id |
-| 16 | GET | `/api/kelas` | Mengambil daftar kelas |
-| 17 | POST | `/api/kelas` | Menambahkan kelas baru |
-| 18 | GET | `/api/kelas/{id}` | Mengambil data kelas berdasarkan id |
-| 19 | PUT/PATCH | `/api/kelas/{id}` | Mengedit data kelas berdasarkan id |
-| 20 | DELETE | `/api/kelas/{id}` | Menghapus data kelas berdasarkan id |
-| 21 | GET | `/api/mapel` | Mengambil daftar mata pelajaran |
-| 22 | POST | `/api/mapel` | Menambahkan mata pelajaran baru |
-| 23 | GET | `/api/mapel/{id}` | Mengambil data mata pelajaran berdasarkan id |
-| 24 | PUT/PATCH | `/api/mapel/{id}` | Mengedit data mata pelajaran berdasarkan id |
-| 25 | DELETE | `/api/mapel/{id}` | Menghapus data mata pelajaran berdasarkan id |
-| 26 | GET | `/api/jadwal` | Mengambil daftar jadwal pelajaran |
-| 27 | POST | `/api/jadwal` | Menambahkan jadwal pelajaran baru |
-| 28 | GET | `/api/jadwal/{id}` | Mengambil data jadwal pelajaran berdasarkan id |
-| 29 | PUT/PATCH | `/api/jadwal/{id}` | Mengedit data jadwal pelajaran berdasarkan id |
-| 30 | DELETE | `/api/jadwal/{id}` | Menghapus data jadwal pelajaran berdasarkan id |
+| 1 | POST | `/api/login` | Login |
+| 2 | POST | `/api/logout` | logout |
+| 3 | GET | `/api/profile` | Mengambil data user yang sedang login |
+| 4 | GET | `/api/users` | Mengambil daftar user |
+| 5 | POST | `/api/users` | Menambahkan user baru |
+| 6 | GET | `/api/users/{id}` | Mengambil data user berdasarkan id |
+| 7 | PUT/PATCH | `/api/users/{id}` | Mengedit data user berdasarkan id |
+| 8 | DELETE | `/api/users/{id}` | Menghapus data user berdasarkan id |
+| 9 | GET | `/api/siswa` | Mengambil daftar siswa |
+| 10 | POST | `/api/siswa` | Menambahkan siswa baru |
+| 11 | GET | `/api/siswa/{id}` | Mengambil data siswa berdasarkan id |
+| 12 | PUT/PATCH | `/api/siswa/{id}` | Mengedit data siswa berdasarkan id |
+| 13 | DELETE | `/api/siswa/{id}` | Menghapus data siswa berdasarkan id |
+| 14 | GET | `/api/guru` | Mengambil daftar guru |
+| 15 | POST | `/api/guru` | Menambahkan guru baru |
+| 16 | GET | `/api/guru/{id}` | Mengambil data guru berdasarkan id |
+| 17 | PUT/PATCH | `/api/guru/{id}` | Mengedit data guru berdasarkan id |
+| 18 | DELETE | `/api/guru/{id}` | Menghapus data guru berdasarkan id |
+| 19 | GET | `/api/kelas` | Mengambil daftar kelas |
+| 20 | POST | `/api/kelas` | Menambahkan kelas baru |
+| 21 | GET | `/api/kelas/{id}` | Mengambil data kelas berdasarkan id |
+| 22 | PUT/PATCH | `/api/kelas/{id}` | Mengedit data kelas berdasarkan id |
+| 23 | DELETE | `/api/kelas/{id}` | Menghapus data kelas berdasarkan id |
+| 24 | GET | `/api/mapel` | Mengambil daftar mata pelajaran |
+| 25 | POST | `/api/mapel` | Menambahkan mata pelajaran baru |
+| 26 | GET | `/api/mapel/{id}` | Mengambil data mata pelajaran berdasarkan id |
+| 27 | PUT/PATCH | `/api/mapel/{id}` | Mengedit data mata pelajaran berdasarkan id |
+| 28 | DELETE | `/api/mapel/{id}` | Menghapus data mata pelajaran berdasarkan id |
+| 29 | GET | `/api/jadwal` | Mengambil daftar jadwal pelajaran |
+| 30 | POST | `/api/jadwal` | Menambahkan jadwal pelajaran baru |
+| 31 | GET | `/api/jadwal/{id}` | Mengambil data jadwal pelajaran berdasarkan id |
+| 32 | PUT/PATCH | `/api/jadwal/{id}` | Mengedit data jadwal pelajaran berdasarkan id |
+| 33 | DELETE | `/api/jadwal/{id}` | Menghapus data jadwal pelajaran berdasarkan id |
 
 ## Pengembangan Selanjutnya?
 
-1. Implementasi JWT Authentication
+1. Implementasi Role-Based Access Control (RBAC)
+2. Integrasi Frontend dengan HTML+JQuery atau framework frontend modern
