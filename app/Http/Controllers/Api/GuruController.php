@@ -169,10 +169,17 @@ class GuruController extends Controller
      */
     public function destroy(Guru $guru)
     {
-        $deleteData = $guru->delete();
+        $userId = $guru->user_id;
 
-        if ($deleteData) {
-            return $this->success(null, 200, 'Guru berhasil dihapus!');
+        $deleteGuru = $guru->delete();
+
+        if ($deleteGuru) {
+            $user = \App\Models\User::find($userId);
+            if ($user) {
+                $user->delete();
+            }
+
+            return $this->success(null, 200, 'Guru dan Akun User berhasil dihapus!');
         }
 
         return $this->failedResponse('Guru gagal dihapus', 500);
