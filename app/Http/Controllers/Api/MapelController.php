@@ -123,7 +123,7 @@ class MapelController extends Controller
         $deleteData = $mapel->delete();
 
         if ($deleteData) {
-            return $this->success($deleteData, 200, 'Berhasil hapus mapel!');
+            return $this->success(null, 200, 'Berhasil hapus mapel!');
         }
 
         return $this->failedResponse('Gagal menghapus mapel!', 500);
