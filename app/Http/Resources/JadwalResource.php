@@ -35,7 +35,7 @@ class JadwalResource extends BaseResource
                 ['name' => 'mapel_id',      'value' => $this->mapel_id,     'prompt'    =>  'ID Mapel'],
                 ['name' => 'guru_id',       'value' => $this->guru_id,      'prompt'    =>  'ID guru'],
                 ['name' => 'hari',          'value' => $this->hari,         'prompt'    =>  'Hari'],
-                ['name' => 'jam_pelajar',   'value' => $this->jam_pelajaran,'prompt'    =>  'Jam Pelajaran'],
+                ['name' => 'jam_pelajaran',   'value' => $this->jam_pelajaran,'prompt'    =>  'Jam Pelajaran'],
             ],
 
             // HATEAOS
