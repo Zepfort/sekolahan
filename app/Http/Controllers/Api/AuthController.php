@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\Guard;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -34,6 +36,35 @@ class AuthController extends Controller
             'message' => 'Login Berhasil',
             'token'   => $token
         ]);
+    }
+
+    public function register(Request $request) // register
+    {
+        $validator = Validator::make($request->all(), [
+            'name'      => 'required|string|max:255',
+            'username'  => 'required|string|max:255|unique:users,username',
+            'type'      => 'required|in:admin,guru,siswa',
+            'email'     => 'required|email|unique:users,email',
+            'password'  => 'required|min:6'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->failedResponse($validator->errors(), 422);
+        }
+
+        $user = User::create([
+            'name'     => $request->name,
+            'username' => $request->username,
+            'type'     => $request->type,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Registrasi Berhasil',
+            'data'    => $user
+        ], 201);
     }
 
     public function logout()    // logout

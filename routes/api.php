@@ -15,6 +15,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/login', [AuthController::class, 'login']);    // Route login
+Route::post('/register', [AuthController::class, 'register']);    // Route register
 
 Route::middleware('jwt.verify')->group(function () {  // Middleware
     Route::post('/logout', [AuthController::class, 'logout']);  // Route logout
